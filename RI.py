@@ -113,9 +113,8 @@ def weighted_wdf():#word_doc_freq
 			freq = word[1]
 			weight = (freq/maxF)*(math.log10(N/ni+1)+1)
 			weighted.write("("+word[0]+", "+str(i)+") -> "+str(weight)+"\n")
-			print("("+word[0]+", "+str(i)+") -> "+str(weight)+"\n")
+			print("("+word[0]+", "+str(i)+") -> "+str(weight))
 			#rev.append((word[0],i,weight))
-			print(""+str((word[0],i,weight)))			
 		i+=1
 	#rev = sorted(rev, key=lambda tup: tup[0])
 	return print("created weighted reversed file") #rev
