@@ -33,7 +33,7 @@ QT designer for the interface.
 
 
 
-###### NOTE: 
+##### NOTE: 
     this project was mostly written using english terms.
       you may find some french terms like:
         produit interne = inner product
