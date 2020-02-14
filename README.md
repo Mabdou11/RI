@@ -2,7 +2,7 @@
 
 Information Retrieval
 
-### index files
+### Index files
   create an Index file ( use *create_index.py*)
   
   The created index file will be used to create the rest.
