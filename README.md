@@ -33,13 +33,14 @@ QT designer for the interface.
 
 
 
-NOTE: this project is mostly written using english terms, 
+###### NOTE: 
+    this project was mostly written using english terms.
       you may find some french terms like:
-       produit interne = inner product
-       rappel = recall
-       lecture = reading
-       Afficher = to display
-       traitement = processing
-       
+        produit interne = inner product
+        rappel = recall
+        lecture = reading 
+        Afficher = to display
+        traitement = processing
+      The main interface is in french.
 
 This project was created with my partner at the university
