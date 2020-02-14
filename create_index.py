@@ -2,17 +2,35 @@ import re
 from nltk.corpus import stopwords
 from nltk import FreqDist as fd
 import math
-# step 1:
+import pickle
+
+"""""""""""""""""""""""""""""""""""""""
+
+	ONLY USE create_indexFile function
+	others will take way too much time
+>	USE "create_pkls.py" for the rest
+	it's much faster
+>	you can modify the script if you
+	want to dump on a txt file
+
+"""""""""""""""""""""""""""""""""""""""
+
 
 documents = open("./cacm/cacm.all","r+", encoding="utf-8").read()
 stopwords = stopwords.words('english')
+
 
 def get_doc(number):
 	match = re.search(r"\.I ("+str(number)+")\n\.T\n((.|\n)*?)\n\.B", documents)
 	if not match:
 		return ""
 	return match.group(0)
-
+docList= []
+i=1
+while(get_doc(i)!=""):
+	docList.append(get_doc(i))
+	i+=1
+i=1
 def num_docs():
 	i=1
 	while(get_doc(i)!=""):
@@ -29,7 +47,7 @@ def get_title(number):
 	return match.group(1)
 
 def get_words(number):
-	doc = get_doc(number)
+	doc = docList[number-1]
 	match = re.search(r".W\n((.|\n)*?)\n\.", doc)
 	if not match:
 		return ""
@@ -37,8 +55,8 @@ def get_words(number):
 
 
 def fdWords(number):
-	title = re.split(" |\.|,|;|/|\?|`|\:|\*|\n|\t|\r|\"|\(|\)|\[|\]|\{|\}|\<|\>|=|\'|\|",get_title(number))
-	words = re.split(" |\.|,|;|/|\?|`|\:|\*|\n|\t|\r|\"|\(|\)|\[|\]|\{|\}|\<|\>|=|\'|\|",get_words(number))
+	title = re.split(" |\.|,|;|/|\?|`|\:|\*|\n|\t|\r|\"|\(|\)|\[|\]|\{|\}|\<|\>|=|\'|\||-",get_title(number))
+	words = re.split(" |\.|,|;|/|\?|`|\:|\*|\n|\t|\r|\"|\(|\)|\[|\]|\{|\}|\<|\>|=|\'|\||-",get_words(number))
 	title = [t.lower() for t in title if (t.lower() not in stopwords) & (len(t)>0)]
 	words = [word.lower() for word in words if (word.lower() not in stopwords) & (len(word)>0)]
 	doc = title + words
@@ -93,7 +111,9 @@ def wdf_dict():#word_doc_freq
 	return rev
 
 
-def weighted_wdf():#word_doc_freq
+def weighted_wdf():
+	
+	#word_doc_freq
 	#fornmula
 	
 	N = 1
@@ -120,23 +140,27 @@ def weighted_wdf():#word_doc_freq
 	return print("created weighted reversed file") #rev
 
 
-##TODO: this will take forever
-print(weighted_wdf())
-
 
 
 def create_indexFile():
 	index= open("index_file.txt","w+",  encoding="utf-8")
+	pklIndex = open("index_file.pkl", 'wb')
 	sum = 0
 	i = 1
+	dictio = dict()
 	while(get_doc(i)!=""):
+		dicti = dict()
 		index.write(str(i)+" ->\n")
 		for w in fdWords(i).items():
 			index.write("("+str(w[0])+", "+str(w[1])+")\n")
+			dicti[w[0]] = w[1]
+		dictio[i] = dicti
 		i+=1
-
+	pickle.dump(dictio, pklIndex)	
 	index.close
 	return "index file created"
+
+create_indexFile()
 
 
 """print("----step1.2----")
@@ -163,53 +187,3 @@ def create_weighted_revFile():
 		weighted.write("("+tup[0]+", "+str(tup[1])+") -> "+str(tup[2])+"\n")
 	weighted.close
 	return "created weighted reversed file"
-
-print(create_weighted_revFile())
-
-def booleanModel_for_rev(terms):
-
-	terms = terms.split()
-	r= open("index_file.txt","r+",  encoding="utf-8")
-	doc = r.readlines()
-	tdf = []
-	for line in doc:
-		match = re.search(r"\((.*?), (.*?)\) -> (.*)", line)
-
-		term, doc, freq = match.group(1),match.group(2),match.group(3)
-		tdf.append((term, doc, freq))
-	r.close
-	return 0
-
-
-def booleanModel(terms):
-
-	terms = terms.split()
-	r= open("index_file.txt","r+",  encoding="utf-8")
-	doc = r.readlines()
-	pertinent_docs = []
-	i =0
-	while i < len(doc):
-		and_terms = terms
-		d = re.search(r"([0-9]+) ->\n", doc[i] )
-		if not d:
-			i+=1
-		else :
-			d = d.group(1)
-			i+=1
-			temp_doc = []
-
-			while(i < len(doc) and not re.search(r"[0-9]+ ->\n", doc[i])):
-				word = re.search(r"\((.*?), ([0-9]+)\)", doc[i])
-				temp_doc.append(word.group(1))
-				i+=1
-			if(any(elem in temp_doc for elem in and_terms)):
-				pertinent_docs.append(d)
-	r.close
-	return pertinent_docs
-
-
-
-#print(create_indexFile())
-#print(booleanModel('algebraic'))
-
-
